@@ -1,0 +1,229 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns 
+from sklearn.preprocessing import LabelEncoder
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.decomposition import PCA
+from sklearn.metrics import roc_curve 
+from sklearn.metrics import auc,roc_auc_score,precision_score,recall_score
+from sklearn.metrics import classification_report
+
+data=pd.read_csv("full_filled_stroke_data.csv")
+data.head()
+
+le=LabelEncoder()
+data['gender']=le.fit_transform(data['gender'])
+data['ever_married']=le.fit_transform(data['ever_married'])
+data['work_type']=le.fit_transform(data['work_type'])
+data['Residence_type']=le.fit_transform(data['Residence_type'])
+data['smoking_status']=le.fit_transform(data['smoking_status'])
+
+data['gender']
+data.head()
+
+  x=data.drop(['stroke'],axis=1)
+
+  y=data['stroke']
+
+from sklearn.model_selection import train_test_split
+
+
+train_x,test_x,train_y,test_y =train_test_split(x,y,random_state=101,stratify=y)
+
+# **ADABOOST**
+
+from sklearn.ensemble import AdaBoostClassifier
+
+clf=AdaBoostClassifier()
+
+clf.fit(train_x,train_y)
+
+AB=clf.score(train_x,train_y)
+AB
+
+AB_test=clf.score(test_x,test_y)
+AB_test
+
+# **NAIVE** **BAYES**
+
+from sklearn.naive_bayes import GaussianNB
+model = GaussianNB()
+model.fit(train_x,train_y)
+
+NBC_train=model.score(train_x,train_y)
+NBC_train
+
+NBC_test=model.score(test_x,test_y)
+NBC_test
+
+**ADABOOST** **VS** **NAIVE** **BAYES**
+
+x = np.arange(2)
+plt.bar(x+2,AB,color='blue',width=2)
+plt.bar(x-2,NBC_test,color = 'red',width=2)
+plt.legend(['AdaBoost','Naive Bayes'])
+plt.xlabel('Models',fontsize = 15)
+plt.ylabel('Accuracy',fontsize=15)
+plt.grid()
+plt.show()
+
+# **MLP**
+
+import pandas as pd
+
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+
+from sklearn.neural_network import MLPClassifier
+
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import classification_report
+
+from sklearn.model_selection import GridSearchCV
+
+data = pd.read_csv("full_filled_stroke_data.csv")
+print(data.head())
+
+le=LabelEncoder()
+data['gender']=le.fit_transform(data['gender'])
+data['ever_married']=le.fit_transform(data['ever_married'])
+data['work_type']=le.fit_transform(data['work_type'])
+data['Residence_type']=le.fit_transform(data['Residence_type'])
+data['smoking_status']=le.fit_transform(data['smoking_status'])
+
+x=data.drop(['stroke'],axis=1)
+y=data['stroke']
+train_x,test_x,train_y,test_y =train_test_split(x,y,random_state=101,stratify=y)
+
+sc=StandardScaler()
+
+scaler = sc.fit(train_x)
+trainX_scaled = scaler.transform(train_x)
+testX_scaled = scaler.transform(test_x)
+
+
+mlp_clf = MLPClassifier(hidden_layer_sizes=(5,2),
+                        max_iter = 300,activation = 'relu',
+                        solver = 'adam')
+
+mlp_clf = MLPClassifier(hidden_layer_sizes=(150,100,50),
+                        max_iter = 300,activation = 'relu',
+                        solver = 'adam')
+
+mlp_clf.fit(trainX_scaled, train_y)
+
+y_pred = mlp_clf.predict(testX_scaled)
+MLP=accuracy_score(test_y, y_pred)
+MLP
+
+**ADABOOST** **VS** **MLP**
+
+x = np.arange(2)
+plt.bar(x+2,AB,color='blue',width=2)
+plt.bar(x-2,MLP,color = 'red',width=2)
+plt.legend(['AdaBoost','MLP'])
+plt.xlabel('Models',fontsize = 15)
+plt.ylabel('Accuracy',fontsize=15)
+plt.grid()
+plt.show()
+
+# **LOGISTIC REGRESSION**
+
+import pandas as pd
+
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+
+from sklearn.neural_network import MLPClassifier
+
+from sklearn.metrics import accuracy_score
+
+data = pd.read_csv("full_filled_stroke_data.csv")
+print(data.head())
+
+le=LabelEncoder()
+data['gender']=le.fit_transform(data['gender'])
+data['ever_married']=le.fit_transform(data['ever_married'])
+data['work_type']=le.fit_transform(data['work_type'])
+data['Residence_type']=le.fit_transform(data['Residence_type'])
+data['smoking_status']=le.fit_transform(data['smoking_status'])
+
+x=data.drop(['stroke'],axis=1)
+y=data['stroke']
+train_x,test_x,train_y,test_y =train_test_split(x,y,random_state=101,stratify=y)
+
+sc=StandardScaler()
+
+scaler = sc.fit(train_x)
+trainX_scaled = scaler.transform(train_x)
+testX_scaled = scaler.transform(test_x)
+
+
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(random_state = 0)
+classifier.fit(train_x, train_y)
+
+
+y_pred = classifier.predict(test_x)
+
+
+LOG_REG=accuracy_score(test_y, y_pred)
+LOG_REG
+
+**ADABOOST** **VS** **LOGISTIC** **REGRESSION**
+
+x = np.arange(2)
+plt.bar(x+2,AB,color='blue',width=2)
+plt.bar(x-2,LOG_REG,color = 'red',width=2)
+plt.legend(['AdaBoost','Logistic Regression'])
+plt.xlabel('Models',fontsize = 15)
+plt.ylabel('Accuracy',fontsize=15)
+plt.grid()
+plt.show()
+
+# **XGB CLASSIFIER**
+
+
+
+import xgboost as xgb
+
+model = xgb.XGBClassifier()
+
+model = xgb.XGBClassifier(
+ learning_rate =0.1,
+ n_estimators=1000,
+ max_depth=5,
+ min_child_weight=1,
+ gamma=0,
+ subsample=0.8,
+ colsample_bytree=0.8,
+ objective= 'binary:logistic',
+ nthread=4,
+ scale_pos_weight=1,
+ seed=27)
+
+train_model = model.fit(train_x, train_y)
+pred = train_model3.predict(test_x)
+XGB = accuracy_score(test_y, pred)
+XGB
+
+**ADABOOST** **VS** **XGBOOST**
+
+x = np.arange(2)
+plt.bar(x+2,AB,color='blue',width=2)
+plt.bar(x-2,XGB,color = 'red',width=2)
+plt.legend(['AdaBoost','XGBoost'])
+plt.xlabel('Models',fontsize = 15)
+plt.ylabel('Accuracy',fontsize=15)
+plt.grid()
+plt.show()
